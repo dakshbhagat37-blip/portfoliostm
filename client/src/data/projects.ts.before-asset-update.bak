@@ -1,0 +1,535 @@
+﻿export type InstagramReel = {
+  id: string;
+  thumbnail: string;
+  url: string;
+  label?: string;
+};
+
+export type Project = {
+  id?: string;
+  category?: string;
+  status?: string;
+  year?: string;
+  clientStatus?: string;
+  role?: string;
+
+  name: string;
+  type: string;
+  note: string;
+  description: string;
+  services: string[];
+  images: string[];
+  marker: string;
+
+  tag:
+    | "CLIENT WORK"
+    | "SELF-INITIATED CONCEPT"
+    | "SOURCE ASSET PENDING";
+
+  cta?: "OPEN WEBSITE" | "OPEN CONCEPT" | "VIEW PROJECT";
+
+  url?: string;
+  website?: string;
+
+  tags: string[];
+  featured?: boolean;
+
+  /*
+   * Optional Instagram Reel gallery.
+   * Used mainly for STM MUSIC GROUP.
+   */
+  instagramReels?: InstagramReel[];
+};
+
+const rawProjects: Omit<
+  Project,
+  "tags" | "website" | "featured"
+>[] = [
+  {
+    name: "LUMORA",
+    type: "BEAUTY / BRANDING / DIGITAL",
+    note:
+      "A luminous identity built to make everyday rituals feel considered.",
+    description:
+      "A complete beauty system spanning identity, packaging and an editorial e-commerce world. Soft edges, sharp hierarchy, tactile details.",
+    services: [
+      "Brand identity",
+      "Product visuals",
+      "Packaging",
+      "Content",
+      "E-commerce",
+    ],
+    images: [],
+    marker: "01",
+    tag: "SOURCE ASSET PENDING",
+    cta: "VIEW PROJECT",
+  },
+
+  {
+    name: "BEFORE FALL",
+    type: "HAIRCARE / BRAND IDENTITY",
+    note:
+      "Approved source capture pending â€” concept direction retained without fabricated visuals.",
+    description:
+      "A self-initiated haircare identity direction. Replace the source-pending board with approved concept files when available.",
+    services: [
+      "Identity",
+      "Typography",
+      "Packaging",
+      "Campaign concepts",
+    ],
+    images: [],
+    marker: "02",
+    tag: "SELF-INITIATED CONCEPT",
+    cta: "VIEW PROJECT",
+  },
+
+  {
+    name: "RAYA",
+    type: "SKINCARE / BRAND SYSTEM",
+    note:
+      "A self-initiated skincare brand system exploring identity, packaging, social and digital experience.",
+    description:
+      "A skincare brand system prepared across identity, packaging, social and digital experience.",
+    services: [
+      "Identity",
+      "Packaging",
+      "Social",
+      "Concept",
+    ],
+    images: [
+      "/assets/work/raya/cover.png",
+      "/assets/work/raya/raya-detail-01.png",
+      "/assets/work/raya/What if your skincare brand looked as premium as the product itself.png",
+    ],
+    marker: "03",
+    tag: "SELF-INITIATED CONCEPT",
+    cta: "VIEW PROJECT",
+  },
+
+  {
+    name: "STM MUSIC GROUP",
+    type: "MUSIC / ARTIST MANAGEMENT / EVENTS",
+    note:
+      "Selected work from STM Music Group â€” artist management, music marketing, content and events.",
+    description:
+      "A selected archive of artist-focused creative work, music marketing, content, release campaigns and events created through STM Music Group.",
+    services: [
+      "Artist management",
+      "Music marketing",
+      "Content",
+      "Release campaigns",
+      "Events",
+    ],
+
+    /*
+     * Reel thumbnails shown inside the project.
+     *
+     * Put these three thumbnail images inside:
+     *
+     * client/public/assets/work/stm-music/
+     *
+     * Recommended filenames:
+     *
+     * reel-01.png
+     * reel-02.png
+     * reel-03.png
+     */
+    images: [
+      "/assets/work/stm-music/reel-01.png",
+      "/assets/work/stm-music/reel-02.png",
+      "/assets/work/stm-music/reel-03.png",
+    ],
+
+    instagramReels: [
+      {
+        id: "stm-reel-01",
+        thumbnail:
+          "/assets/work/stm-music/reel-01.png",
+        url:
+          "https://www.instagram.com/reel/DdcA-vSqmL6/",
+        label: "WATCH REEL 01",
+      },
+
+      {
+        id: "stm-reel-02",
+        thumbnail:
+          "/assets/work/stm-music/reel-02.png",
+        url:
+          "https://www.instagram.com/reel/DZXh-evyo6x/",
+        label: "WATCH REEL 02",
+      },
+
+      {
+        id: "stm-reel-03",
+        thumbnail:
+          "/assets/work/stm-music/reel-03.png",
+        url:
+          "https://www.instagram.com/reel/DYl6wdRsKsl/",
+        label: "WATCH REEL 03",
+      },
+    ],
+
+    marker: "04",
+    tag: "CLIENT WORK",
+    cta: "VIEW PROJECT",
+  },
+
+  {
+    name: "NINA'S BEAUTY HUB",
+    type: "BEAUTY / DIGITAL EXPERIENCE",
+    note:
+      "Source asset slot â€” connect the approved website capture.",
+    description:
+      "Website, beauty imagery, service presentation, mobile experience and UI details.",
+    services: [
+      "Homepage",
+      "Beauty imagery",
+      "Services",
+      "Mobile experience",
+      "UI details",
+    ],
+    images: [],
+    marker: "05",
+    tag: "SOURCE ASSET PENDING",
+    cta: "OPEN WEBSITE",
+  },
+
+  {
+    name: "FARMLYTICS",
+    type: "AGRICULTURE / TECHNOLOGY / DIGITAL PLATFORM",
+    note:
+      "Source asset slot â€” connect the approved interface capture.",
+    description:
+      "Interface, dashboard, data visualizations, agricultural visuals and responsive screens.",
+    services: [
+      "Interface",
+      "Dashboard",
+      "Data visualization",
+      "Agriculture",
+      "Responsive screens",
+    ],
+    images: [],
+    marker: "06",
+    tag: "SOURCE ASSET PENDING",
+    cta: "OPEN WEBSITE",
+  },
+
+  {
+    name: "CHAINMIND AI",
+    type: "AI / TECHNOLOGY / SUPPLY CHAIN",
+    note:
+      "Source asset slot â€” connect the approved product capture.",
+    description:
+      "AI interface, dashboards, system visuals, technology screens and data experience.",
+    services: [
+      "AI interface",
+      "Dashboards",
+      "System visuals",
+      "Technology screens",
+      "Data experience",
+    ],
+    images: [],
+    marker: "07",
+    tag: "SOURCE ASSET PENDING",
+    cta: "OPEN WEBSITE",
+  },
+
+  {
+    name: "ASHA TIFFINS",
+    type: "RESTAURANT / FOOD / DIGITAL EXPERIENCE",
+    note:
+      "Source asset slot â€” connect the approved website capture.",
+    description:
+      "Food imagery, menu experience, restaurant identity, mobile layout and ordering flow.",
+    services: [
+      "Food imagery",
+      "Menu",
+      "Identity",
+      "Mobile layout",
+      "Ordering",
+    ],
+    images: [],
+    marker: "08",
+    tag: "SOURCE ASSET PENDING",
+    cta: "OPEN WEBSITE",
+  },
+
+  {
+    name: "PSYCHOLOGY WITH MITALI",
+    type: "WELLNESS / PROFESSIONAL SERVICES / DIGITAL",
+    note:
+      "Source asset slot â€” connect the approved website capture.",
+    description:
+      "Calm editorial imagery, typography, service presentation and mobile experience.",
+    services: [
+      "Website",
+      "Typography",
+      "Editorial imagery",
+      "Services",
+      "Mobile",
+    ],
+    images: [],
+    marker: "09",
+    tag: "SOURCE ASSET PENDING",
+    cta: "OPEN WEBSITE",
+  },
+
+  {
+    name: "AURELIA / FIGMA CONCEPT",
+    type: "LUXURY JEWELRY / BRAND EXPERIENCE",
+    note:
+      "Supplied Figma concept â€” clearly marked as concept work.",
+    description:
+      "Luxury imagery, product presentation, typography and interactive editorial composition.",
+    services: [
+      "Luxury imagery",
+      "Product presentation",
+      "Typography",
+      "Editorial composition",
+      "Interactive details",
+    ],
+    images: [],
+    marker: "10",
+    tag: "SELF-INITIATED CONCEPT",
+    cta: "OPEN CONCEPT",
+  },
+
+  {
+    name: "TWINE / FIGMA CONCEPT",
+    type: "CONCEPT / FIGMA EXPERIENCE",
+    note:
+      "Supplied second Figma concept â€” exploratory work.",
+    description:
+      "A second concept direction for a luxury digital experience, shown as an experiment.",
+    services: [
+      "Concept direction",
+      "Figma experience",
+      "Editorial UI",
+      "Interaction",
+    ],
+    images: [],
+    marker: "11",
+    tag: "SELF-INITIATED CONCEPT",
+    cta: "OPEN CONCEPT",
+  },
+
+  {
+    name: "KUMAR & KUMAR SPORTS",
+    type: "E-COMMERCE / SPORTS NUTRITION",
+    note:
+      "Source asset slot â€” connect the approved store capture.",
+    description:
+      "Product system, e-commerce interface, product cards, performance branding and mobile shopping.",
+    services: [
+      "Product system",
+      "E-commerce",
+      "Product cards",
+      "Branding",
+      "Shopping",
+    ],
+    images: [],
+    marker: "12",
+    tag: "SOURCE ASSET PENDING",
+    cta: "OPEN WEBSITE",
+  },
+
+  {
+    name: "FUTURE LUXE JEWELRY",
+    type: "LUXURY JEWELRY / DIGITAL EXPERIENCE",
+    note:
+      "Supplied website concept â€” use as source for the atelier direction.",
+    description:
+      "Cinematic product imagery, luxury interface, interactive 3D concept and atelier experience.",
+    services: [
+      "Product imagery",
+      "Luxury interface",
+      "3D concept",
+      "Product presentation",
+      "Atelier",
+    ],
+    images: [],
+    marker: "13",
+    tag: "SOURCE ASSET PENDING",
+    cta: "OPEN WEBSITE",
+  },
+];
+
+const projectMetadata: Record<
+  string,
+  Pick<Project, "tags" | "website" | "featured">
+> = {
+  LUMORA: {
+    tags: [
+      "Branding",
+      "E-commerce",
+      "Content",
+      "Web / Digital",
+    ],
+    featured: true,
+  },
+
+  "BEFORE FALL": {
+    tags: [
+      "Branding",
+      "Campaigns",
+      "Concepts",
+    ],
+    featured: true,
+  },
+
+  RAYA: {
+    tags: [
+      "Branding",
+      "Content",
+      "Concepts",
+    ],
+    featured: true,
+  },
+
+  "STM MUSIC GROUP": {
+    tags: [
+      "Content",
+      "Campaigns",
+      "Social",
+    ],
+    featured: true,
+  },
+
+  "NINA'S BEAUTY HUB": {
+    tags: [
+      "Web / Digital",
+      "Branding",
+      "Content",
+    ],
+    website:
+      "https://nina-s-beauty-hub.vercel.app/",
+    featured: true,
+  },
+
+  FARMLYTICS: {
+    tags: [
+      "Web / Digital",
+      "Technology",
+      "Data",
+    ],
+    website:
+      "https://farmlytics-three.vercel.app/",
+    featured: true,
+  },
+
+  "CHAINMIND AI": {
+    tags: [
+      "AI / Technology",
+      "Web / Digital",
+      "Data",
+    ],
+    website:
+      "https://chainmind-ai-ten.vercel.app/",
+    featured: true,
+  },
+
+  "ASHA TIFFINS": {
+    tags: [
+      "Web / Digital",
+      "E-commerce",
+      "Content",
+    ],
+    website:
+      "https://asha-tiffin-bengaluru.vercel.app/",
+    featured: true,
+  },
+
+  "PSYCHOLOGY WITH MITALI": {
+    tags: [
+      "Web / Digital",
+      "Branding",
+      "Content",
+    ],
+    website:
+      "https://psychologywithmitali.vercel.app/",
+    featured: true,
+  },
+
+  "AURELIA / FIGMA CONCEPT": {
+    tags: [
+      "Concepts",
+      "Branding",
+      "Web / Digital",
+    ],
+    website:
+      "https://shield-slogan-46223925.figma.site/",
+  },
+
+  "TWINE / FIGMA CONCEPT": {
+    tags: [
+      "Concepts",
+      "Web / Digital",
+      "Experimental",
+    ],
+    website:
+      "https://twine-dull-31092199.figma.site/",
+  },
+
+  "KUMAR & KUMAR SPORTS": {
+    tags: [
+      "E-commerce",
+      "Web / Digital",
+      "Content",
+    ],
+    website:
+      "https://kumar-and-kumar-sports.vercel.app/",
+    featured: true,
+  },
+
+  "FUTURE LUXE JEWELRY": {
+    tags: [
+      "Concepts",
+      "Web / Digital",
+      "Experimental",
+    ],
+    website:
+      "https://future-luxe-jewelry.vercel.app/",
+  },
+};
+
+export const projects: Project[] = rawProjects.map(
+  (project) => {
+    const metadata =
+      projectMetadata[project.name] ?? {
+        tags: [],
+      };
+
+    const id = project.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    const isClient =
+      project.tag === "CLIENT WORK";
+
+    return {
+      ...project,
+      ...metadata,
+
+      id,
+
+      category:
+        project.type.split(" /")[0],
+
+      status:
+        project.tag,
+
+      year:
+        "2026",
+
+      clientStatus:
+        isClient
+          ? "CLIENT WORK"
+          : "CONCEPT / EXPERIMENT",
+
+      role:
+        "CREATIVE + DIGITAL SYSTEMS",
+    };
+  }
+);

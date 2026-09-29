@@ -1,0 +1,2510 @@
+import { useEffect, useState } from "react";
+import {
+  ArrowUpRight,
+  ChevronRight,
+  Mail,
+  MousePointer2,
+  X,
+} from "lucide-react";
+import { projects, type Project } from "@/data/projects";
+import { isDbuMode, siteConfig } from "@/data/siteConfig";
+
+type FileId =
+  | "work"
+  | "capabilities"
+  | "process"
+  | "instagram"
+  | "dbu"
+  | "about"
+  | "misc"
+  | "contact";
+
+function AssetFallback({
+  label = "ASSET COMING SOON",
+  compact = false,
+}: {
+  label?: string;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className={`asset-fallback ${
+        compact ? "asset-fallback-compact" : ""
+      }`}
+      role="img"
+      aria-label={label}
+    >
+      <span>{label}</span>
+      <i>STUDIO SOURCE / PENDING</i>
+    </div>
+  );
+}
+
+const capabilities = [
+  {
+    id: "creative",
+    label: "CREATIVE",
+    items: ["Branding", "Content", "Campaigns", "Design"],
+    image: null,
+  },
+  {
+    id: "growth",
+    label: "GROWTH",
+    items: [
+      "Social media",
+      "Performance marketing",
+      "SEO",
+      "Acquisition",
+    ],
+    image: null,
+  },
+  {
+    id: "technology",
+    label: "TECHNOLOGY",
+    items: [
+      "Websites",
+      "E-commerce",
+      "Web apps",
+      "Digital experiences",
+    ],
+    image: null,
+  },
+  {
+    id: "ai",
+    label: "AI & AUTOMATION",
+    items: [
+      "AI workflows",
+      "Business automation",
+      "Lead systems",
+      "WhatsApp / CRM automation",
+    ],
+    image: null,
+  },
+  {
+    id: "data",
+    label: "DATA",
+    items: [
+      "Analytics",
+      "Tracking",
+      "Reporting",
+      "Optimization",
+    ],
+    image: null,
+  },
+];
+
+const process = [
+  ["01", "DISCOVER", "Understand the brand, audience and problem."],
+  ["02", "STRATEGIZE", "Define the direction, positioning and plan."],
+  ["03", "CREATE", "Build the creative system and content."],
+  ["04", "BUILD", "Turn the idea into digital experiences and systems."],
+  ["05", "LAUNCH", "Put the work into the real world."],
+  ["06", "MEASURE", "Track meaningful performance."],
+  ["07", "OPTIMIZE", "Learn, improve and scale."],
+];
+
+const files: Array<{
+  id: FileId;
+  index: string;
+  title: string;
+  detail: string;
+  className: string;
+  tone: "cream" | "charcoal" | "outline";
+}> = [
+  {
+    id: "work",
+    index: "01 / FILE",
+    title: "OUR WORK",
+    detail: "13 PROJECTS",
+    className: "file-work",
+    tone: "cream",
+  },
+  {
+    id: "capabilities",
+    index: "02 / FILE",
+    title: "WHAT WE DO",
+    detail: "05 DISCIPLINES",
+    className: "file-capabilities",
+    tone: "charcoal",
+  },
+  {
+    id: "process",
+    index: "03 / FILE",
+    title: "HOW WE WORK",
+    detail: "07 MOVES",
+    className: "file-process",
+    tone: "outline",
+  },
+  {
+    id: "instagram",
+    index: "04 / SPECIAL FILE",
+    title: "OUR INSTAGRAM",
+    detail: "& HIGHLIGHTS",
+    className: "file-instagram",
+    tone: "charcoal",
+  },
+  {
+    id: "dbu",
+    index: "05 / CONCEPT",
+    title: "DBU CONCEPT",
+    detail: "CREATIVE × ACQUISITION × TECHNOLOGY",
+    className: "file-dbu",
+    tone: "cream",
+  },
+   {
+    id: "about",
+    index: "06 / FILE",
+    title: "ABOUT / STM",
+    detail: "THE SHORT VERSION",
+    className: "file-about",
+    tone: "outline",
+  },
+
+  {
+    id: "misc",
+    index: "07 / SPECIAL FILE",
+    title: "MISC / SELECTED WORK",
+    detail: "VIDEO × REELS × EXPERIMENTS",
+    className: "file-misc",
+    tone: "charcoal",
+  },
+
+  {
+    id: "contact",
+    index: "08 / OPEN INVITATION",
+    title: "START A PROJECT",
+    detail: "LET'S BUILD SOMETHING GREAT",
+    className: "file-contact",
+    tone: "cream",
+  },
+];
+
+const visibleFiles = files.filter(
+  (file) => file.id !== "dbu" || isDbuMode
+);
+
+/* ============================================================
+   ARCHIVE PREVIEW IMAGES
+   These images appear inside the small PREVIEW / OPEN card.
+   ============================================================ */
+
+const previewImages: Partial<Record<FileId, string>> = {
+  work: "/assets/work/raya/raya-01.png",
+  capabilities: "/assets/work/lumora/lumora-01.png",
+  process: "/assets/work/before-fall/before-fall-01.png",
+  instagram: "/assets/instagram/instagram-01.png",
+  about: "/assets/work/chainmind-ai/chainmind-ai-01.jpeg",
+  misc: "/assets/misc/misc-01.png",
+  contact: "/assets/work/future-luxe/future-luxe-01.png",
+};
+
+const previewLabels: Record<FileId, string> = {
+  work: "RAYA / BRAND SYSTEM",
+  capabilities: "LUMORA / CREATIVE",
+  process: "BEFORE FALL / IDENTITY",
+  instagram: "STM / INSTAGRAM",
+  dbu: "DBU / CONCEPT PROPOSAL",
+  about: "CHAINMIND AI / TECHNOLOGY",
+  misc: "MISC / SELECTED WORK",
+  contact: "FUTURE LUXE / DIGITAL",
+};
+
+function FileObject({
+  file,
+  index,
+  onOpen,
+  onHover,
+}: {
+  file: (typeof files)[number];
+  index: number;
+  onOpen: (id: FileId) => void;
+  onHover: (label: string | null) => void;
+}) {
+  const previewImage = previewImages[file.id];
+
+  return (
+    <button
+      className={`archive-file ${file.className} tone-${file.tone}`}
+      style={{ animationDelay: `${index * 70}ms` }}
+      onClick={() => onOpen(file.id)}
+      onMouseEnter={() => onHover("OPEN FILE")}
+      onMouseLeave={() => onHover(null)}
+      aria-label={`Open ${file.title}`}
+    >
+      {/* IMAGE PREVIEW */}
+      <span className="file-preview">
+        {previewImage ? (
+          <img
+            src={previewImage}
+            alt={`${file.title} preview`}
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
+        ) : (
+          <span className="file-preview-editorial">
+            <small>{file.id === "dbu" ? "DBU" : file.title}</small>
+            <strong>{file.id === "dbu" ? "CONCEPT" : "ARCHIVE"}</strong>
+            <i>
+              {file.id === "dbu" ? "CONCEPT PROPOSAL" : "STUDIO FILE"}
+            </i>
+          </span>
+        )}
+
+        <b>{previewLabels[file.id]}</b>
+      </span>
+
+      {/* INSTAGRAM MINI SPILL */}
+      {file.id === "instagram" && (
+        <span className="file-mini-spill" aria-hidden="true">
+          <img src="/assets/instagram/instagram-02.png" alt="" />
+          <img src="/assets/instagram/instagram-03.png" alt="" />
+          <i>STM / FEED</i>
+        </span>
+      )}
+
+      {/* PIN */}
+      <span className="file-pin" aria-hidden="true" />
+
+      {/* TOP LINE */}
+      <span className="file-topline">
+        <span>{file.index}</span>
+        <span>↗</span>
+      </span>
+
+      {/* TITLE */}
+      <span className="file-title">{file.title}</span>
+
+      {/* DETAIL */}
+      <span className="file-detail">{file.detail}</span>
+
+      {/* RULE */}
+      <span className="file-rule" />
+
+      {/* FOOTER */}
+      <span className="file-bottomline">
+        <span>SoleTrustMedia</span>
+        <span>2026</span>
+      </span>
+    </button>
+  );
+}
+
+function SheetHeader({
+  eyebrow,
+  title,
+  onClose,
+  dark = false,
+}: {
+  eyebrow: string;
+  title: string;
+  onClose: () => void;
+  dark?: boolean;
+}) {
+  return (
+    <div
+      className={`sheet-header ${
+        dark ? "sheet-header-dark" : ""
+      }`}
+    >
+      <div>
+        <p className="sheet-eyebrow">{eyebrow}</p>
+        <h2>{title}</h2>
+      </div>
+
+      <button
+        className="close-button"
+        onClick={onClose}
+        aria-label="Close file"
+      >
+        <span>CLOSE</span>
+        <X size={18} strokeWidth={1.5} />
+      </button>
+    </div>
+  );
+}
+
+function WorkView({
+  onClose,
+  onOpenProject,
+}: {
+  onClose: () => void;
+  onOpenProject: (project: Project) => void;
+}) {
+  const [category, setCategory] = useState("all");
+
+  const categoryFiles = [
+    ["all", "00", "ALL", "FULL VISUAL ARCHIVE"],
+    [
+      "branding",
+      "01",
+      "BRANDING",
+      "IDENTITY · PACKAGING · SYSTEMS",
+    ],
+    [
+      "web",
+      "02",
+      "WEB / DIGITAL",
+      "WEBSITES · EXPERIENCES · UI",
+    ],
+    [
+      "ecommerce",
+      "03",
+      "E-COMMERCE",
+      "STORES · PRODUCTS · CONVERSION",
+    ],
+    [
+      "content",
+      "04",
+      "CONTENT",
+      "REELS · POSTS · STORY SYSTEMS",
+    ],
+    [
+      "campaigns",
+      "05",
+      "CAMPAIGNS",
+      "LAUNCHES · PAID · MOMENTS",
+    ],
+    [
+      "ai",
+      "06",
+      "AI / TECHNOLOGY",
+      "SYSTEMS · AUTOMATION · PRODUCT",
+    ],
+    [
+      "data",
+      "07",
+      "DATA",
+      "TRACKING · ANALYTICS · OPTIMIZATION",
+    ],
+    [
+      "concepts",
+      "08",
+      "CONCEPTS",
+      "SELF-INITIATED · FIGMA · EXPERIMENTAL",
+    ],
+  ] as const;
+
+  const tagMap: Record<string, string[]> = {
+    branding: ["Branding"],
+    web: ["Web / Digital", "Technology"],
+    ecommerce: ["E-commerce"],
+    content: ["Content", "Social"],
+    campaigns: ["Campaigns"],
+    ai: ["AI / Technology", "Technology"],
+    data: ["Data"],
+    concepts: ["Concepts", "Experimental"],
+  };
+
+  const shownProjects = projects.filter(
+    (project) =>
+      category === "all" ||
+      (tagMap[category] ?? []).some((tag) =>
+        project.tags.includes(tag)
+      )
+  );
+
+  return (
+    <div className="sheet sheet-work">
+      <SheetHeader
+        eyebrow="01 / OUR WORK / VISUAL ARCHIVE"
+        title="WHAT WE'VE BUILT."
+        onClose={onClose}
+      />
+
+      <div className="work-intro">
+        <p className="sheet-lede">
+          A physical index of work, concepts and source-ready
+          digital projects. Open a smaller file to change the
+          view.
+        </p>
+
+        <span className="work-count">
+          {String(shownProjects.length).padStart(2, "0")} PROJECT
+          FILES
+        </span>
+      </div>
+
+      <div className="work-category-files">
+        {categoryFiles.map(
+          ([id, number, label, detail]) => (
+            <button
+              className={`work-category-file ${
+                category === id ? "is-active" : ""
+              }`}
+              key={id}
+              onClick={() => setCategory(id)}
+            >
+              <span>{number} / FILE</span>
+              <strong>{label}</strong>
+              <small>{detail}</small>
+              <i>↗</i>
+            </button>
+          )
+        )}
+      </div>
+
+      <div className="work-category-note">
+        <span>
+          {
+            categoryFiles.find(
+              (item) => item[0] === category
+            )?.[2]
+          }{" "}
+          / FILTER
+        </span>
+
+        <p>
+          Matching project files rise forward. Every result is
+          driven by the central project dataset and its tags.
+        </p>
+
+        <b>
+          {shownProjects.length} PROJECT FILES / SOURCE-READY
+          ARCHIVE
+        </b>
+      </div>
+
+      <div className="project-grid">
+        {shownProjects.length === 0 ? (
+          <div className="archive-empty-state">
+            <span>ARCHIVE / EMPTY CATEGORY</span>
+
+            <strong>
+              NO FILES IN THIS CATEGORY YET.
+            </strong>
+
+            <p>
+              Approved project files will appear here when this
+              category has source material.
+            </p>
+          </div>
+        ) : (
+          shownProjects.map((project, index) => (
+            <button
+              className={`project-card project-card-${index + 1}`}
+              key={project.name}
+              onClick={() => onOpenProject(project)}
+            >
+              <div className="project-image-wrap">
+                {project.images[0] ? (
+                  <img
+                    src={project.images[0]}
+                    alt={`${project.name} project visual`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <AssetFallback label="PROJECT VISUAL / COMING SOON" />
+                )}
+
+                <span className="project-open">
+                  OPEN FILE
+                  <ArrowUpRight size={14} />
+                </span>
+              </div>
+
+              <div className="project-meta">
+                <span>
+                  {project.marker} / {project.tag}
+                </span>
+
+                <span>
+                  {project.type.split(" /")[0]}
+                </span>
+              </div>
+
+              <h3>{project.name}</h3>
+
+              <p>{project.note}</p>
+            </button>
+          ))
+        )}
+      </div>
+
+      <div className="sheet-footnote">
+        <span>IMAGE FIRST / TEXT SECOND</span>
+        <span>
+          CLICK A SMALL FILE TO CHANGE THE ARCHIVE
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function ProjectView({
+  project,
+  onClose,
+}: {
+  project: Project;
+  onClose: () => void;
+}) {
+  return (
+    <div className="sheet project-sheet">
+      <SheetHeader
+        eyebrow={`${project.marker} / PROJECT FILE / ${project.tag}`}
+        title={project.name}
+        onClose={onClose}
+      />
+
+      {/* PROJECT HEADER */}
+
+      <div className="project-detail-head">
+        <div className="project-facts">
+          <p>
+            <span>YEAR</span>
+            {project.year ?? "2026"}
+          </p>
+
+          <p>
+            <span>TYPE</span>
+            {project.type}
+          </p>
+
+          <p>
+            <span>ROLE</span>
+            {project.role ??
+              "CREATIVE + DIGITAL SYSTEMS"}
+          </p>
+
+          <p>
+            <span>STATUS</span>
+            {project.clientStatus ?? project.tag}
+          </p>
+        </div>
+
+        <p>{project.note}</p>
+      </div>
+
+      {/* PROJECT VISUAL MOSAIC */}
+
+      <div className="project-mosaic">
+        <div className="mosaic-image mosaic-large">
+          {project.images[0] ? (
+            <img
+              src={project.images[0]}
+              alt={`${project.name} project visual`}
+            />
+          ) : (
+            <AssetFallback label="PROJECT VISUAL / COMING SOON" />
+          )}
+        </div>
+
+        <div className="mosaic-image mosaic-small">
+          {project.images[1] ? (
+            <img
+              src={project.images[1]}
+              alt={`${project.name} detail`}
+            />
+          ) : (
+            <AssetFallback label="DETAIL / COMING SOON" />
+          )}
+        </div>
+
+        <div className="mosaic-note">
+          <span>THE IDEA</span>
+          <p>{project.description}</p>
+        </div>
+
+        <div className="mosaic-image mosaic-medium">
+          {project.images[2] ? (
+            <img
+              src={project.images[2]}
+              alt={`${project.name} detail`}
+            />
+          ) : (
+            <AssetFallback label="DETAIL / COMING SOON" />
+          )}
+        </div>
+      </div>
+
+      {/* SERVICES */}
+
+      <div className="project-services">
+        <span>SERVICES</span>
+
+        <div>
+          {project.services.map((service) => (
+            <span key={service}>{service}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* INSTAGRAM REELS */}
+
+      {project.instagramReels &&
+        project.instagramReels.length > 0 && (
+          <section className="project-reels">
+            <div className="project-reels-heading">
+              <div>
+                <span>SELECTED REELS</span>
+                <h3>FROM THE FEED.</h3>
+              </div>
+
+              <p>
+                Source-linked content from the STM Music Group
+                Instagram archive.
+              </p>
+            </div>
+
+            <div className="project-reels-grid">
+              {project.instagramReels.map(
+                (reel, index) => (
+                  <a
+                    className="project-reel-card"
+                    key={reel.id}
+                    href={reel.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={
+                      reel.label ??
+                      `Watch Instagram Reel ${
+                        index + 1
+                      }`
+                    }
+                  >
+                    <div className="project-reel-image">
+                      {reel.thumbnail ? (
+                        <img
+                          src={reel.thumbnail}
+                          alt={
+                            reel.label ??
+                            `${project.name} Reel ${
+                              index + 1
+                            }`
+                          }
+                          loading="lazy"
+                        />
+                      ) : (
+                        <AssetFallback label="REEL THUMBNAIL / COMING SOON" />
+                      )}
+
+                      <span className="project-reel-open">
+                        WATCH REEL
+                        <ArrowUpRight size={14} />
+                      </span>
+
+                      <span className="project-reel-number">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+
+                    <div className="project-reel-meta">
+                      <span>
+                        {reel.label ??
+                          `WATCH REEL ${String(
+                            index + 1
+                          ).padStart(2, "0")}`}
+                      </span>
+
+                      <span>INSTAGRAM ↗</span>
+                    </div>
+                  </a>
+                )
+              )}
+            </div>
+          </section>
+        )}
+
+      {/* PROJECT CTA */}
+
+      <div className="project-cta">
+        <span>
+          {project.tag === "SOURCE ASSET PENDING"
+            ? "SOURCE ASSET / APPROVED CAPTURE PENDING"
+            : project.tag}
+        </span>
+
+        {project.website ? (
+          <a
+            href={project.website}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {project.cta ?? "VIEW PROJECT"}
+            <ArrowUpRight size={15} />
+          </a>
+        ) : (
+          <span className="project-link-pending">
+            SOURCE LINK PENDING
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CapabilitiesView({
+  onClose,
+  active,
+  setActive,
+}: {
+  onClose: () => void;
+  active: string;
+  setActive: (id: string) => void;
+}) {
+  const current =
+    capabilities.find(
+      (capability) => capability.id === active
+    ) ?? capabilities[0];
+
+  return (
+    <div className="sheet sheet-capabilities">
+      <SheetHeader
+        eyebrow="02 / WHAT WE DO"
+        title="WHAT WE DO."
+        onClose={onClose}
+      />
+
+      <div className="capability-layout">
+        <div className="capability-list">
+          {capabilities.map(
+            (capability, index) => (
+              <button
+                className={`capability-tab ${
+                  active === capability.id
+                    ? "is-active"
+                    : ""
+                }`}
+                key={capability.id}
+                onClick={() =>
+                  setActive(capability.id)
+                }
+              >
+                <span>0{index + 1}</span>
+
+                <strong>{capability.label}</strong>
+
+                <ChevronRight
+                  size={18}
+                  strokeWidth={1.2}
+                />
+              </button>
+            )
+          )}
+        </div>
+
+        <div className="capability-reveal">
+          <div className="capability-image">
+            <AssetFallback
+              label={`${current.label} / WORKING BOARD`}
+            />
+
+            <span>
+              STUDIO BOARD / {current.label}
+            </span>
+          </div>
+
+          <div className="reveal-index">
+            DISCIPLINE /{" "}
+            {String(
+              capabilities.indexOf(current) + 1
+            ).padStart(2, "0")}
+          </div>
+
+          <h3>{current.label}</h3>
+
+          <div className="capability-items">
+            {current.items.map(
+              (item, index) => (
+                <div key={item}>
+                  <span>0{index + 1}</span>
+                  {item}
+                </div>
+              )
+            )}
+          </div>
+
+          <p>
+            One connected studio for the visible work
+            and the systems underneath it.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const processVisuals: Record<
+  string,
+  {
+    title: string;
+    items: string[];
+    note: string;
+  }
+> = {
+  DISCOVER: {
+    title: "BRAND RESEARCH",
+    items: [
+      "Audience notes",
+      "Competitor references",
+      "Moodboard",
+      "Problem statement",
+    ],
+    note: "Look closely before making a move.",
+  },
+
+  STRATEGIZE: {
+    title: "STRATEGY BOARD",
+    items: [
+      "Positioning",
+      "Content pillars",
+      "Campaign structure",
+      "Funnel / audience",
+    ],
+    note: "A direction the whole system can hold.",
+  },
+
+  CREATE: {
+    title: "CREATIVE OUTPUTS",
+    items: [
+      "Brand identity",
+      "Social post",
+      "Campaign visual",
+      "Packaging / type",
+    ],
+    note: "Make the idea visible.",
+  },
+
+  BUILD: {
+    title: "DIGITAL EXPERIENCE",
+    items: [
+      "Website",
+      "Landing page",
+      "Web app",
+      "E-commerce / interaction",
+    ],
+    note: "Turn a direction into something people can use.",
+  },
+
+  LAUNCH: {
+    title: "GOING LIVE",
+    items: [
+      "Campaign",
+      "Social post",
+      "Reel",
+      "Website live / content",
+    ],
+    note: "Put the work into the real world.",
+  },
+
+  MEASURE: {
+    title: "ILLUSTRATIVE DASHBOARD",
+    items: [
+      "Analytics",
+      "Campaign data",
+      "Conversion",
+      "Traffic / leads",
+    ],
+    note:
+      "Conceptual visual — no actual performance numbers.",
+  },
+
+  OPTIMIZE: {
+    title: "ITERATION NOTES",
+    items: [
+      "Version 01",
+      "Learn",
+      "Version 02",
+      "Improve / scale",
+    ],
+    note: "Keep what works. Sharpen what doesn't.",
+  },
+};
+
+function ProcessView({
+  onClose,
+  active,
+  setActive,
+}: {
+  onClose: () => void;
+  active: string | null;
+  setActive: (step: string | null) => void;
+}) {
+  const visual = active
+    ? processVisuals[active]
+    : null;
+
+  return (
+    <div className="sheet sheet-process">
+      <SheetHeader
+        eyebrow="03 / HOW WE WORK / MOVE TO REVEAL"
+        title="THE WAY THROUGH."
+        onClose={onClose}
+      />
+
+      <p className="sheet-lede process-lede">
+        Hover or tap a step. The working file appears
+        beside it.
+      </p>
+
+      <div className="process-interactive">
+        <div className="process-grid">
+          {process.map(
+            ([number, title, description]) => (
+              <button
+                className={`process-step ${
+                  active === title
+                    ? "is-active"
+                    : ""
+                }`}
+                key={number}
+                onMouseEnter={() =>
+                  setActive(title)
+                }
+                onFocus={() =>
+                  setActive(title)
+                }
+                onClick={() =>
+                  setActive(
+                    active === title
+                      ? null
+                      : title
+                  )
+                }
+              >
+                <span className="process-number">
+                  {number}
+                </span>
+
+                <div>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </div>
+
+                <span className="process-arrow">
+                  ↗
+                </span>
+              </button>
+            )
+          )}
+        </div>
+
+        {visual && (
+          <div
+            className="process-preview"
+            key={active}
+          >
+            <div className="process-preview-image">
+              <AssetFallback
+                label={`${active} / STUDIO ARTIFACT`}
+              />
+
+              <span>
+                WORK FILE / {active}
+              </span>
+            </div>
+
+            <div className="process-preview-copy">
+              <span>{active} / PREVIEW</span>
+
+              <h3>{visual.title}</h3>
+
+              {visual.items.map(
+                (item, index) => (
+                  <p key={item}>
+                    <b>0{index + 1}</b>
+                    {item}
+                  </p>
+                )
+              )}
+
+              <small>{visual.note}</small>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function InstagramView({
+  onClose,
+}: {
+  onClose: () => void;
+}) {
+  const [selectedPost, setSelectedPost] =
+    useState<number | null>(null);
+
+  const posts = [
+  {
+    label: "WEBSITE / WHY IT MATTERS",
+    category: "DIGITAL / REEL",
+    date: "25 SEP 2026",
+    description:
+      "Why does your business need a website? A public reel about credibility, access, brand identity and digital presence.",
+    url: "https://www.instagram.com/soletrustmedia/reel/DdtI_-rikcU/",
+    image: "/assets/instagram/instagram-01.png",
+    className: "feed-post-a",
+  },
+
+  {
+    label: "BRAND / DIGITAL PRESENCE",
+    category: "BRANDING / WEB",
+    date: "23 SEP 2026",
+    description:
+      "A public post about strong identity, professional websites and digital experiences that make a brand stand out.",
+    url: "https://www.instagram.com/soletrustmedia/p/DdoH9WKGB49/",
+    image: "/assets/instagram/instagram-02.png",
+    className: "feed-post-b",
+  },
+
+  {
+    label: "LUMORA / BRAND STRATEGY",
+    category: "BRANDING / REEL",
+    date: "09 SEP 2026",
+    description:
+      "A public reel describing the strategy, creativity and branding work behind a LUMORA visual.",
+    url: "https://www.instagram.com/soletrustmedia/reel/DdEV1RRqkNU/",
+    image: "/assets/instagram/instagram-03.png",
+    className: "feed-post-c",
+  },
+
+  {
+    label: "STUDIO / CREATIVE PROCESS",
+    category: "STUDIO / REEL",
+    date: "22 SEP 2026",
+    description:
+      "A public studio reel with people, camera, tripod and the work of making content.",
+    url: "https://www.instagram.com/soletrustmedia/reel/DdlbfLotaMe/",
+    image: "/assets/instagram/instagram-04.png",
+    className: "feed-post-d",
+  },
+];
+  const selected =
+    selectedPost === null
+      ? null
+      : posts[selectedPost];
+
+  return (
+    <div className="sheet sheet-instagram">
+
+      <SheetHeader
+        eyebrow="04 / OUR INSTAGRAM & HIGHLIGHTS / @SOLETRUSTMEDIA"
+        title="REAL WORK. REAL STORIES."
+        onClose={onClose}
+      />
+
+      <div className="feed-intro">
+        <p className="sheet-lede">
+          A studio feed assembled from the public
+          profile: latest source-linked work, reels
+          and field notes.
+        </p>
+
+        <span>
+          LATEST FROM @SOLETRUSTMEDIA
+        </span>
+      </div>
+
+      <div className="feed-stage">
+
+        {/* PHONE */}
+
+       <div className="instagram-device">
+  <div className="device-speaker" />
+
+  <div className="device-screen">
+    <img
+      src="/assets/instagram/instagram-01.png"
+      alt="SoleTrustMedia Instagram"
+      className="device-screen-image"
+    />
+
+    <div className="device-screen-overlay">
+      <span>@SOLETRUSTMEDIA</span>
+      <strong>LIVE / SELECTED</strong>
+      <small>WORK · PROGRESS · STORIES</small>
+    </div>
+  </div>
+</div>
+
+        {/* STUDIO STAMP */}
+
+        <div className="feed-stamp">
+          STM
+          <br />
+          <small>SELECTED</small>
+        </div>
+
+        {/* INSTAGRAM POSTS */}
+
+        {posts.map((post, index) => (
+          <button
+            className={`feed-post ${post.className}`}
+            key={post.url}
+            onClick={() =>
+              setSelectedPost(index)
+            }
+          >
+
+            <img
+              src={post.image}
+              alt={post.label}
+              loading="lazy"
+            />
+
+            <span>
+              {post.label}
+            </span>
+
+            <i>
+              {post.date}
+            </i>
+
+            <em>
+              {post.category}
+            </em>
+
+          </button>
+        ))}
+
+        <div className="feed-caption">
+          SOURCE-LINKED POSTS
+          <br />
+          REAL INSTAGRAM CONTENT
+        </div>
+
+        {/* POST DETAIL */}
+
+        {selected && (
+          <div className="feed-detail">
+
+            <button
+              className="feed-detail-close"
+              onClick={() =>
+                setSelectedPost(null)
+              }
+            >
+              <X size={16} />
+              CLOSE
+            </button>
+
+            <img
+              src={selected.image}
+              alt={selected.label}
+            />
+
+            <div>
+
+              <span>
+                {selected.category} /{" "}
+                {selected.date}
+              </span>
+
+              <h3>
+                {selected.label}
+              </h3>
+
+              <p>
+                {selected.description}
+              </p>
+
+              <a
+                className="feed-instagram-link"
+                href={selected.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                VIEW ON INSTAGRAM
+                <ArrowUpRight size={15} />
+              </a>
+
+            </div>
+
+          </div>
+        )}
+
+      </div>
+
+      <div className="feed-footer">
+
+        <span>
+          STUDIO FEED / @SOLETRUSTMEDIA
+        </span>
+
+        <a
+          href={siteConfig.instagramUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          VIEW INSTAGRAM
+          <ArrowUpRight size={15} />
+        </a>
+
+      </div>
+
+    </div>
+  );
+}
+
+function DbuView({
+  onClose,
+}: {
+  onClose: () => void;
+}) {
+  const contentCards = [
+    "DAY IN THE LIFE",
+    "WHY I CHOSE DBU",
+    "60 SECONDS AT DBU",
+    "ALUMNI STORIES",
+    "INSIDE DBU",
+    "STUDENT EVENT DIARIES",
+  ];
+
+  const contentFlow = [
+    "LONG FORM",
+    "SHORTS",
+    "REELS",
+    "LINKEDIN",
+    "CAROUSEL",
+    "WEBSITE STORY",
+    "PAID AD",
+  ];
+
+  const acquisitionFlow = [
+    "CAMPAIGN",
+    "CLICK",
+    "LANDING PAGE",
+    "ENQUIRY",
+    "CRM",
+    "COUNSELLOR",
+    "APPLICATION",
+    "ADMISSION",
+  ];
+
+  const pillars = [
+    "CREATIVE",
+    "GROWTH",
+    "TECHNOLOGY",
+    "AI & AUTOMATION",
+    "DATA",
+  ];
+
+  const studentJourney = [
+    "ATTENTION",
+    "INTEREST",
+    "ENQUIRY",
+    "COUNSELLING",
+    "APPLICATION",
+    "ADMISSION",
+  ];
+
+  return (
+    <div className="sheet sheet-dbu">
+      <SheetHeader
+        eyebrow="04 / CONCEPT PROPOSAL / NOT CLIENT WORK"
+        title="DBU × SOLETRUSTMEDIA"
+        onClose={onClose}
+      />
+
+      <div className="dbu-hero">
+        <div>
+          <p>
+            CREATIVE × ACQUISITION × TECHNOLOGY
+          </p>
+
+          <h3>
+            FROM ATTENTION
+            <br />
+            <em>TO ADMISSION.</em>
+          </h3>
+        </div>
+
+        <span className="concept-badge">
+          CONCEPT PROPOSAL
+          <br />
+          NOT CLIENT WORK
+        </span>
+      </div>
+
+      <div className="student-journey">
+        {studentJourney.map(
+          (step, index) => (
+            <div key={step}>
+              <span>0{index + 1}</span>
+              <strong>{step}</strong>
+
+              {index <
+                studentJourney.length - 1 && (
+                <ChevronRight size={15} />
+              )}
+            </div>
+          )
+        )}
+      </div>
+
+      <div className="dbu-block">
+        <div className="dbu-block-head">
+          <span>01 / CONTENT ENGINE</span>
+
+          <p>
+            Turn university assets into recurring
+            content.
+          </p>
+        </div>
+
+        <div className="content-cards">
+          {contentCards.map(
+            (card, index) => (
+              <div
+                className="content-card"
+                key={card}
+              >
+                <span>0{index + 1}</span>
+                <strong>{card}</strong>
+                <i>↗</i>
+              </div>
+            )
+          )}
+        </div>
+
+        <div className="flow-strip">
+          {contentFlow.map(
+            (step, index) => (
+              <div key={step}>
+                <span>
+                  {String(index + 1).padStart(
+                    2,
+                    "0"
+                  )}
+                </span>
+
+                <strong>{step}</strong>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      <div className="dbu-block">
+        <div className="dbu-block-head">
+          <span>02 / PAID ACQUISITION</span>
+
+          <p>
+            Make every step visible without
+            promising outcomes.
+          </p>
+        </div>
+
+        <div className="channel-row">
+          <span>META</span>
+          <span>GOOGLE</span>
+          <span>YOUTUBE</span>
+          <span>RETARGETING</span>
+        </div>
+
+        <div className="acquisition-flow">
+          {acquisitionFlow.map(
+            (step, index) => (
+              <div key={step}>
+                <span>
+                  {String(index + 1).padStart(
+                    2,
+                    "0"
+                  )}
+                </span>
+
+                <strong>{step}</strong>
+
+                {index <
+                  acquisitionFlow.length - 1 && (
+                  <ChevronRight size={14} />
+                )}
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      <div className="dbu-systems">
+        <div className="system-card">
+          <span>03 / CRM SYSTEM</span>
+
+          <div className="crm-flow">
+            {[
+              "NEW LEAD",
+              "CONTACTED",
+              "INTERESTED",
+              "COUNSELLING",
+              "APPLICATION",
+              "ADMISSION",
+            ].map((step) => (
+              <strong key={step}>
+                {step}
+              </strong>
+            ))}
+          </div>
+        </div>
+
+        <div className="system-card whatsapp-card">
+          <span>04 / AI + WHATSAPP</span>
+
+          <div className="chat-line">
+            AI
+            <b>Hi — how can we help?</b>
+          </div>
+
+          <div className="chat-line user">
+            YOU
+            <b>
+              I want to explore a course.
+            </b>
+          </div>
+
+          <p>
+            AI ASSISTS.
+            <br />
+            <em>HUMANS DECIDE.</em>
+          </p>
+        </div>
+      </div>
+
+      <div className="dbu-block dbu-finish">
+        <div className="dbu-block-head">
+          <span>
+            05 / FIVE CAPABILITY PILLARS
+          </span>
+
+          <p>
+            Audit → select → build → launch →
+            measure → optimize → scale.
+          </p>
+        </div>
+
+        <div className="pillar-row">
+          {pillars.map(
+            (pillar, index) => (
+              <span key={pillar}>
+                <i>0{index + 1}</i>
+                {pillar}
+              </span>
+            )
+          )}
+        </div>
+
+        <div className="measurement-chain">
+          CAMPAIGN <b>→</b> CLICK <b>→</b> LEAD{" "}
+          <b>→</b> QUALIFIED LEAD <b>→</b>{" "}
+          COUNSELLING <b>→</b> APPLICATION{" "}
+          <b>→</b> ADMISSION
+        </div>
+      </div>
+    </div>
+  );
+}
+function MiscView({ onClose }: { onClose: () => void }) {
+  const miscVideos = [
+    {
+      id: "video-01",
+      title: "VIDEO / 01",
+      file: "/assets/misc/WhatsApp Video 2026-09-29 at 16.08.31.mp4",
+    },
+    {
+      id: "video-02",
+      title: "VIDEO / 02",
+      file: "/assets/misc/WhatsApp Video 2026-09-29 at 16.09.08.mp4",
+    },
+    {
+      id: "video-03",
+      title: "VIDEO / 03",
+      file: "/assets/misc/WhatsApp Video 2026-09-29 at 16.10.33.mp4",
+    },
+    {
+      id: "video-04",
+      title: "VIDEO / 04",
+      file: "/assets/misc/WhatsApp Video 2026-09-29 at 16.13.38.mp4",
+    },
+    {
+      id: "video-05",
+      title: "VIDEO / 05",
+      file: "/assets/misc/WhatsApp Video 2026-09-29 at 16.14.08.mp4",
+    },
+    {
+      id: "video-06",
+      title: "VIDEO / 06",
+      file: "/assets/misc/WhatsApp Video 2026-09-29 at 16.14.09.mp4",
+    },
+  ];
+
+  const miscReels = [
+    {
+      id: "parul-01",
+      title: "PARUL UNIVERSITY / 01",
+      url: "https://www.instagram.com/reel/DdZaWs7IrZ6/",
+    },
+    {
+      id: "parul-02",
+      title: "PARUL UNIVERSITY / 02",
+      url: "https://www.instagram.com/reel/Dc6O-iUgYCn/",
+    },
+    {
+      id: "parul-03",
+      title: "PARUL UNIVERSITY / 03",
+      url: "https://www.instagram.com/reel/Dc0ntrfqT2c/",
+    },
+    {
+      id: "parul-04",
+      title: "PARUL UNIVERSITY / 04",
+      url: "https://www.instagram.com/reel/DcbY4Q-SaK1/",
+    },
+  ];
+
+  return (
+    <div className="sheet sheet-misc">
+      <SheetHeader
+        eyebrow="07 / SPECIAL FILE / SELECTED WORK"
+        title="THE OTHER STUFF."
+        onClose={onClose}
+      />
+
+      <div className="misc-intro">
+        <p>
+          A collection of things we made, edited, filmed, posted,
+          tested and experimented with outside the main project archive.
+        </p>
+
+        <div className="misc-meta">
+          <span>VIDEO × SOCIAL × EXPERIMENTS</span>
+          <span>2026 / SELECTED</span>
+        </div>
+      </div>
+
+      <div className="misc-section">
+        <div className="misc-section-head">
+          <span>01 / VIDEO WORK</span>
+          <span>{miscVideos.length.toString().padStart(2, "0")} ITEMS</span>
+        </div>
+
+        <div className="misc-video-grid">
+          {miscVideos.map((video, index) => (
+            <article className="misc-video-card" key={video.id}>
+              <div className="misc-video-frame">
+                <video
+                  src={video.file}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  muted={false}
+                  defaultMuted={false}
+                  volume={1}
+                  onLoadedMetadata={(event) => {
+                    event.currentTarget.muted = false;
+                    event.currentTarget.defaultMuted = false;
+                    event.currentTarget.volume = 1;
+                  }}
+                />
+                <span className="misc-index">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              </div>
+
+              <div className="misc-card-info">
+                <div>
+                  <small>VIDEO / EDITING</small>
+                  <h3>{video.title}</h3>
+                </div>
+
+                <span>PLAY FILM →</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div className="misc-section misc-social-section">
+        <div className="misc-section-head">
+          <span>02 / UNIVERSITY SOCIAL</span>
+          <span>THIRD-PARTY COLLABORATION</span>
+        </div>
+
+        <div className="misc-note">
+          Selected social/video work contributed through a third-party
+          collaboration. Not a direct client engagement with the university.
+        </div>
+
+        <div className="misc-reel-grid">
+          {miscReels.map((reel, index) => (
+            <article className="misc-reel-card" key={reel.id}>
+              <div className="misc-reel-placeholder">
+                <span>
+                  PARUL
+                  <br />
+                  UNIVERSITY
+                </span>
+
+                <small>
+                  REEL / {String(index + 1).padStart(2, "0")}
+                </small>
+                <i>THUMBNAIL / SOURCE PENDING</i>
+              </div>
+
+              <div className="misc-card-info">
+                <div>
+                  <small>THIRD-PARTY COLLABORATION</small>
+                  <h3>{reel.title}</h3>
+                </div>
+
+                <a
+                  href={reel.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  WATCH REEL ↗
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+function AboutView({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="sheet sheet-about">
+
+      <SheetHeader
+        eyebrow="06 / ABOUT / STM"
+        title="THE SHORT VERSION."
+        onClose={onClose}
+      />
+
+      <div className="about-revised">
+
+        <div className="about-visual">
+
+       <div className="about-logo-plus">
+  <img
+    className="about-logo"
+    src="/assets/logo/SoleTrustMedia_logo.pdf__3_-removebg-preview.png"
+    alt="SoleTrustMedia"
+  />
+
+  <i>+</i>
+</div>
+
+          <small>
+            CREATIVE
+            <br />
+            TECHNICAL
+            <br />
+            STUDIO / ARCHIVE NOTE 06
+          </small>
+
+        </div>
+
+        <div className="about-revised-copy">
+
+          <p className="about-quote">
+            We don't decorate brands.
+            <br />
+            <em>
+              We design moments people remember.
+            </em>
+          </p>
+
+          <p>
+            We combine creative, technology and growth
+            to build brands, digital experiences and
+            systems that move people and businesses
+            forward.
+          </p>
+
+          <div className="about-pills">
+            <span>CREATIVE</span>
+            <span>TECHNOLOGY</span>
+            <span>GROWTH</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
+
+function ContactView({
+  onClose,
+  sent,
+  onSent,
+}: {
+  onClose: () => void;
+  sent: boolean;
+  onSent: () => void;
+}) {
+  return (
+    <div className="sheet sheet-contact">
+      <SheetHeader
+        eyebrow="08 / START A PROJECT"
+        title="LET'S BUILD SOMETHING GREAT."
+        onClose={onClose}
+      />
+
+      <div className="contact-editorial">
+        <div className="contact-editorial-copy">
+          <span>OPEN INVITATION / 2026</span>
+
+          <h3>
+            LET'S BUILD
+            <br />
+            <em>SOMETHING</em>
+            <br />
+            GREAT.
+          </h3>
+
+          <p>
+            Start a project, send a note or find
+            the studio elsewhere.
+          </p>
+        </div>
+
+        <div className="contact-options">
+          <a href="mailto:hello@soletrustmedia.com">
+            <span>01</span>
+            <strong>EMAIL</strong>
+            <small>
+              soletrustmedia.com /
+            </small>
+            <ArrowUpRight size={17} />
+          </a>
+
+          <a
+            href={siteConfig.instagramUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>02</span>
+            <strong>INSTAGRAM</strong>
+            <small>Follow the studio</small>
+            <ArrowUpRight size={17} />
+          </a>
+
+          <button onClick={onSent}>
+            <span>03</span>
+
+            <strong>
+              {sent
+                ? "NOTE STAGED ✓"
+                : "START A PROJECT"}
+            </strong>
+
+            <small>
+              {sent
+                ? "We'll be in touch."
+                : "Open a simple enquiry"}
+            </small>
+
+            <ArrowUpRight size={17} />
+          </button>
+        </div>
+      </div>
+
+      {sent && (
+        <p className="form-note editorial-note">
+          This is a front-end enquiry moment.
+          Connect the form endpoint when you're
+          ready to receive submissions.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function BootScreen({
+  extracting,
+  onOpen,
+  onSkip,
+}: {
+  extracting: boolean;
+  onOpen: () => void;
+  onSkip: () => void;
+}) {
+  const extractFiles = [
+    "01_WORK",
+    "02_CAPABILITIES",
+    "03_PROCESS",
+    "04_SOCIAL",
+    "05_DBU_CONCEPT",
+    "06_STUDIO",
+    "07_MISC_WORK",
+    "08_CONTACT",
+  ];
+
+  return (
+    <main
+      className={`boot-screen ${
+        extracting ? "is-extracting" : ""
+      }`}
+    >
+      <div className="boot-noise" />
+
+      <div className="boot-top">
+        <span>SOLETRUSTMEDIA</span>
+        <span>
+          CREATIVE × TECHNOLOGY × GROWTH
+        </span>
+      </div>
+
+      <div className="boot-center">
+        <img
+          className="boot-brand-logo"
+          src="/assets/logo/SoleTrustMedia_logo.pdf__3_-removebg-preview.png"
+          alt="SoleTrustMedia"
+        />
+
+        <p className="boot-kicker">
+          SYSTEM / CREATIVE ARCHIVE
+        </p>
+
+        <h1>
+          SOLETRUSTMEDIA
+          <br />
+          <em>ARCHIVE_2026.stm</em>
+        </h1>
+
+        <div className="boot-file-meta">
+          <span>
+            COMPRESSED CREATIVE ARCHIVE
+          </span>
+
+          <span>
+            13 PROJECTS / 07 SYSTEMS / ∞ IDEAS
+          </span>
+        </div>
+
+        {!extracting ? (
+          <button
+            className="boot-open"
+            onClick={onOpen}
+          >
+            OPEN ARCHIVE
+            <ArrowUpRight size={16} />
+          </button>
+        ) : (
+          <div className="extract-panel">
+            <div className="extract-label">
+              <span>
+                SOLETRUSTMEDIA_ARCHIVE.stm
+              </span>
+
+              <span>EXTRACTING...</span>
+            </div>
+
+            <div className="extract-bar">
+              <i />
+            </div>
+
+            <div className="extract-list">
+              {extractFiles.map(
+                (file, index) => (
+                  <span
+                    key={file}
+                    style={{
+                      animationDelay: `${
+                        index * 90
+                      }ms`,
+                    }}
+                  >
+                    ✓ {file}
+                  </span>
+                )
+              )}
+            </div>
+
+            <strong className="extract-ready">
+              ARCHIVE EXTRACTED.
+            </strong>
+          </div>
+        )}
+      </div>
+
+      <div className="boot-bottom">
+        <span>DESIGNER'S DESK / 2026</span>
+
+        <span>
+          {extracting
+            ? "EXTRACTING CREATIVE SYSTEM"
+            : "CLICK TO ENTER"}
+        </span>
+
+        <button
+          className="boot-skip"
+          onClick={onSkip}
+        >
+          SKIP INTRO →
+        </button>
+      </div>
+    </main>
+  );
+}
+
+function ArchiveComplete({
+  onReopen,
+}: {
+  onReopen: () => void;
+}) {
+  return (
+    <section className="archive-complete container">
+      <span>ARCHIVE COMPLETE.</span>
+
+      <h2>
+        YOU'VE SEEN THE WORK.
+        <br />
+        <em>BUT THERE'S MORE TO BUILD.</em>
+      </h2>
+
+      <p>
+        SOLETRUSTMEDIA / WE CREATE. WE BUILD. WE
+        GROW.
+      </p>
+
+      <button onClick={onReopen}>
+        REOPEN ARCHIVE
+        <ArrowUpRight size={15} />
+      </button>
+    </section>
+  );
+}
+
+function SignatureSpill({
+  id,
+}: {
+  id: FileId;
+}) {
+  if (id === "work")
+    return (
+      <div
+        className="signature-spill spill-work"
+        aria-hidden="true"
+      >
+        <AssetFallback
+          label="PROJECT FILES / SOURCE PENDING"
+          compact
+        />
+        <span>APPROVED CAPTURES NEEDED</span>
+      </div>
+    );
+
+  if (id === "capabilities")
+    return (
+      <div
+        className="signature-spill spill-capabilities"
+        aria-hidden="true"
+      >
+        <div className="orbit orbit-a">
+          BRAND
+        </div>
+
+        <div className="orbit orbit-b">
+          WEB
+        </div>
+
+        <div className="orbit orbit-c">
+          AI
+        </div>
+
+        <i>↗ SYSTEMS CONNECT</i>
+      </div>
+    );
+
+  if (id === "process")
+    return (
+      <div
+        className="signature-spill spill-process"
+        aria-hidden="true"
+      >
+        <div className="process-line" />
+
+        <span>IDEA</span>
+        <span>SYSTEM</span>
+        <span>EXECUTION</span>
+        <span>GROWTH</span>
+      </div>
+    );
+
+  if (id === "instagram")
+    return (
+      <div
+        className="signature-spill spill-instagram"
+        aria-hidden="true"
+      >
+        <div className="spill-phone">
+          <span>@SOLETRUSTMEDIA</span>
+          <strong>HIGHLIGHTS</strong>
+        </div>
+
+        <AssetFallback
+          label="REAL THUMBNAILS / PENDING"
+          compact
+        />
+      </div>
+    );
+
+  if (id === "dbu")
+    return (
+      <div
+        className="signature-spill spill-dbu"
+        aria-hidden="true"
+      >
+        <div>ATTENTION</div>
+        <b>↓</b>
+        <div>ENQUIRY</div>
+        <b>↓</b>
+        <div>ADMISSION</div>
+      </div>
+    );
+
+  if (id === "misc")
+    return (
+      <div
+        className="signature-spill spill-misc"
+        aria-hidden="true"
+      >
+        <div className="misc-spill-card">
+          <span>SELECTED WORK</span>
+          <strong>VIDEO</strong>
+          <strong>REELS</strong>
+          <strong>EXPERIMENTS</strong>
+          <i>01 / SPECIAL FILE</i>
+        </div>
+      </div>
+    );
+
+  if (id === "about")
+    return (
+      <div
+        className="signature-spill spill-about"
+        aria-hidden="true"
+      >
+        <strong>STM</strong>
+        <span>
+          CREATIVE × TECHNOLOGY × GROWTH
+        </span>
+      </div>
+    );
+
+  return (
+    <div
+      className="signature-spill spill-contact"
+      aria-hidden="true"
+    >
+      <span>OPEN INVITATION</span>
+
+      <strong>
+        LET'S BUILD
+        <br />
+        SOMETHING GREAT.
+      </strong>
+
+      <i>↗</i>
+    </div>
+  );
+}
+
+export default function Home() {
+  const [openFile, setOpenFile] =
+    useState<FileId | null>(null);
+
+  const [selectedProject, setSelectedProject] =
+    useState<Project | null>(null);
+
+  const [activeCapability, setActiveCapability] =
+    useState("creative");
+
+  const [hoverLabel, setHoverLabel] =
+    useState<string | null>(null);
+
+  const [pointer, setPointer] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  const [sent, setSent] = useState(false);
+
+  const [activeProcess, setActiveProcess] =
+    useState<string | null>(null);
+
+  const [isOpening, setIsOpening] =
+    useState(false);
+
+  const [isClosing, setIsClosing] =
+    useState(false);
+
+  const [archiveExtracted, setArchiveExtracted] =
+    useState(
+      () =>
+        typeof window !== "undefined" &&
+        sessionStorage.getItem(
+          "stm-archive-seen"
+        ) === "1"
+    );
+
+  const [extracting, setExtracting] =
+    useState(false);
+
+  useEffect(() => {
+    const move = (event: MouseEvent) =>
+      setPointer({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+    window.addEventListener(
+      "mousemove",
+      move
+    );
+
+    return () =>
+      window.removeEventListener(
+        "mousemove",
+        move
+      );
+  }, []);
+
+  useEffect(() => {
+    const onKey = (
+      event: KeyboardEvent
+    ) => {
+      if (event.key === "Escape") {
+        setIsClosing(true);
+
+        window.setTimeout(() => {
+          setOpenFile(null);
+          setSelectedProject(null);
+          setIsClosing(false);
+        }, 520);
+      }
+    };
+
+    window.addEventListener(
+      "keydown",
+      onKey
+    );
+
+    document.body.style.overflow = openFile
+      ? "hidden"
+      : "";
+
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        onKey
+      );
+
+      document.body.style.overflow = "";
+    };
+  }, [openFile]);
+
+  const beginExtraction = () => {
+    setExtracting(true);
+
+    window.setTimeout(() => {
+      sessionStorage.setItem(
+        "stm-archive-seen",
+        "1"
+      );
+
+      setExtracting(false);
+      setArchiveExtracted(true);
+    }, 1500);
+  };
+
+  const skipIntro = () => {
+    sessionStorage.setItem(
+      "stm-archive-seen",
+      "1"
+    );
+
+    setArchiveExtracted(true);
+  };
+
+  const replayExtraction = () => {
+    sessionStorage.removeItem(
+      "stm-archive-seen"
+    );
+
+    setOpenFile(null);
+    setArchiveExtracted(false);
+    setExtracting(false);
+  };
+
+  const open = (id: FileId) => {
+    setSelectedProject(null);
+    setSent(false);
+    setIsClosing(false);
+    setIsOpening(true);
+    setOpenFile(id);
+    setActiveProcess(null);
+
+    window.setTimeout(
+      () => setIsOpening(false),
+      820
+    );
+  };
+
+  const close = () => {
+    setIsClosing(true);
+
+    window.setTimeout(() => {
+      setOpenFile(null);
+      setSelectedProject(null);
+      setIsClosing(false);
+    }, 520);
+  };
+
+  const sheetContent =
+    openFile === "work" &&
+    !selectedProject ? (
+      <WorkView
+        onClose={close}
+        onOpenProject={setSelectedProject}
+      />
+    ) : openFile === "work" &&
+      selectedProject ? (
+      <ProjectView
+        project={selectedProject}
+        onClose={() =>
+          setSelectedProject(null)
+        }
+      />
+    ) : openFile === "capabilities" ? (
+      <CapabilitiesView
+        onClose={close}
+        active={activeCapability}
+        setActive={setActiveCapability}
+      />
+    ) : openFile === "process" ? (
+      <ProcessView
+        onClose={close}
+        active={activeProcess}
+        setActive={setActiveProcess}
+      />
+    ) : openFile === "instagram" ? (
+      <InstagramView onClose={close} />
+    ) : openFile === "dbu" ? (
+      <DbuView onClose={close} />
+    ) : openFile === "about" ? (
+  <AboutView onClose={close} />
+) : openFile === "misc" ? (
+  <MiscView onClose={close} />
+) : openFile === "contact" ? (
+  <ContactView
+    onClose={close}
+    sent={sent}
+    onSent={() => setSent(true)}
+  />
+) : null;
+
+  if (!archiveExtracted)
+    return (
+      <BootScreen
+        extracting={extracting}
+        onOpen={beginExtraction}
+        onSkip={skipIntro}
+      />
+    );
+
+  return (
+    <main
+      className={`archive-site ${
+        openFile ? "archive-is-open" : ""
+      }`}
+    >
+      <div
+        className="grain"
+        aria-hidden="true"
+      />
+
+      <div
+        className={`cursor-tag ${
+          hoverLabel ? "is-visible" : ""
+        }`}
+        style={{
+          left: pointer.x + 14,
+          top: pointer.y + 14,
+        }}
+      >
+        <MousePointer2 size={12} />
+        {hoverLabel}
+      </div>
+
+      <header className="topbar">
+        <button
+          className="brand-lockup"
+          onClick={close}
+          aria-label="Return to archive"
+        >
+          <img
+            className="header-brand-logo"
+            src="/assets/logo/SoleTrustMedia_logo.pdf__3_-removebg-preview.png"
+            alt="SoleTrustMedia"
+          />
+        </button>
+
+        <div className="topbar-right">
+          <span>
+            CREATIVE × TECHNOLOGY × GROWTH
+          </span>
+
+          <button
+            className="archive-status"
+            onClick={replayExtraction}
+          >
+            <i />
+            ARCHIVE / OPEN
+          </button>
+        </div>
+      </header>
+
+      <section className="hero container">
+        <div className="hero-kicker">
+          <span>
+            (00) / DIGITAL ARCHIVE
+          </span>
+
+          <span>SCROLL TO EXPLORE</span>
+        </div>
+
+        <div className="hero-copy">
+          <p className="hero-overline">
+            A CREATIVE STUDIO FOR BRANDS IN MOTION
+          </p>
+
+          <h1>
+            WE CREATE.
+            <br />
+            <em>WE BUILD.</em>
+            <br />
+            WE GROW.
+          </h1>
+        </div>
+
+        <div className="hero-side-note">
+          <span>
+            THE WEBSITE
+            <br />
+            IS THE WORK.
+          </span>
+
+          <span className="hero-arrow">
+            ↓
+          </span>
+        </div>
+      </section>
+
+      <section
+        className="archive-section container"
+        aria-label="SoleTrustMedia archive"
+      >
+        <div className="archive-heading">
+          <div>
+            <p className="section-label">
+              OPEN THE ARCHIVE
+            </p>
+
+            <h2>
+              Pick a file.
+              <br />
+              <em>See what happens.</em>
+            </h2>
+          </div>
+
+          <p className="archive-description">
+            A short, visual archive of work, ideas
+            and systems in motion.
+          </p>
+        </div>
+
+        <div className="archive-desk">
+          {visibleFiles.map(
+            (file, index) => (
+              <FileObject
+                key={file.id}
+                file={file}
+                index={index}
+                onOpen={open}
+                onHover={setHoverLabel}
+              />
+            )
+          )}
+
+          <div className="desk-caption">
+            <span>
+              SOLETRUSTMEDIA / FIELD NOTES
+            </span>
+
+            <span>
+              CLICK OBJECTS TO OPEN
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <footer className="footer container">
+        <span>
+          SOLETRUSTMEDIA™ / 2026
+        </span>
+
+        <span>
+          CREATIVE × TECHNOLOGY × GROWTH
+        </span>
+
+        <a href="mailto:hello@soletrustmedia.com">
+          HELLO@SOLETRUSTMEDIA.COM ↗
+        </a>
+      </footer>
+
+      <ArchiveComplete
+        onReopen={replayExtraction}
+      />
+
+      {openFile && (
+        <div
+          aria-modal="true"
+          aria-label="Archive file content"
+          className={`sheet-backdrop signature-backdrop opening-${openFile} ${
+            isOpening
+              ? "is-opening"
+              : ""
+          } ${
+            isClosing
+              ? "is-closing"
+              : ""
+          }`}
+          role="presentation"
+          onMouseDown={(event) => {
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
+              close();
+            }
+          }}
+        >
+          <div
+            className="unlock-sequence"
+            aria-hidden="true"
+          >
+            <span className="unlock-ring" />
+
+            <span className="unlock-label">
+              OPENING /{" "}
+              {
+                visibleFiles.find(
+                  (file) =>
+                    file.id === openFile
+                )?.index
+              }
+            </span>
+          </div>
+
+          <SignatureSpill id={openFile} />
+
+          {sheetContent}
+        </div>
+      )}
+    </main>
+  );
+}
