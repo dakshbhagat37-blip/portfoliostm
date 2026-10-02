@@ -203,7 +203,17 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
+// The Manus editor runtime only works inside Manus, so leave it out of Netlify builds
+const isNetlify = Boolean(process.env.NETLIFY);
+
+const plugins = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  ...(isNetlify ? [] : [vitePluginManusRuntime()]),
+  vitePluginManusDebugCollector(),
+  vitePluginStorageProxy(),
+];
 
 export default defineConfig({
   plugins,

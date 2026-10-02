@@ -1623,7 +1623,6 @@ function MiscView({ onClose }: { onClose: () => void }) {
   playsInline
   preload="metadata"
   muted={false}
-  defaultMuted={false}
   className="misc-video"
   onLoadedMetadata={(event) => {
     const video = event.currentTarget;
